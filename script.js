@@ -7,3 +7,4 @@ document.write(',а 10+answer='+(answer+10));//сумма чисел 10+10=20
 document.write(';тип text это '+typeof(text));//доказываем, что text это строка
 document.write(',text + answer='+text + answer);//сумма числа и строки '10'+10=1010
 
+console.log(null&&0);
