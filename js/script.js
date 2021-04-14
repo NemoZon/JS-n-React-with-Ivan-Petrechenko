@@ -16,30 +16,104 @@ P.S. Здесь есть несколько вариантов решения з
 5) Фильмы должны быть отсортированы по алфавиту */
 
 'use strict';
-
-const movieDB = {
-    movies: [
-        "Логан",
-        "Лига справедливости",
-        "Ла-ла лэнд",
-        "Одержимость",
-        "Cкотт Пилигрим против..."
-    ]
-},
-    adv = document.querySelectorAll('.promo__adv img'), //блок с рекламой
-    background = document.querySelector('.promo__bg'),//блок с bg
-    list = document.getElementsByClassName('promo__interactive-item'), //блок с просмотренными фильмами
-    genre = background.querySelector('.promo__genre');//блок с жанром
+document.addEventListener('DOMContentLoaded',()=>{
+    let movieDB = {
+        movies: [
+            "Логан",
+            "Лига справедливости",
+            "Ла-ла лэнд",
+            "Одержимость",
+            "Cкотт Пилигрим против..."
+        ]
+    },
+        background = document.querySelector('.promo__bg'),
+        list = document.querySelector('.promo__interactive-list'), //список с просмотренными фильмами
+        item = list.querySelectorAll('.promo__interactive-item'), //элемент с просмотренным фильмом
+        genre = background.querySelector('.promo__genre'),//блок с жанром
+        form = document.querySelector('form.add'), //массив с формой
+        Input = form.querySelector('.adding__input'),//блок с вводом
+        CheckBox = form.querySelector('input[type="checkbox"]'), //галочка
+        Confirm = form.querySelector('button');//кнопка подтверждения
     
-adv.forEach(item=>{
-    item.remove();
+    document.querySelectorAll('.promo__adv img').forEach(elem=>{
+        elem.remove();
+    });
+    
+    genre.textContent = "драма";
+    background.style.cssText = "background-image: url('../img/bg.jpg');";
+    movieDB.movies.sort();
+    
+    item.forEach((a,b)=>{
+        a.innerHTML = "";
+        a.insertAdjacentHTML("afterbegin", '<div class="delete"></div>');
+        a.insertAdjacentText("afterbegin", `${b+1}.${movieDB.movies[b]}`);
+        movieDB.movies[b] = `${b+1}.${movieDB.movies[b]}`;
+    });
+    
+    //создание элементов в просмотренные фильмы
+    createItem(movieDB.movies);
+    function createItem(dataBase){
+        Confirm.addEventListener('click',(e) => {
+            e.preventDefault();
+            if (Input.value.length>0){
+                if (Input.value.length>21){
+                    Input.value = Input.value.substring(0, 21) + '...';
+                }
+                dataBase.forEach((elem,index)=>{
+                    dataBase[index]=elem.substr(2);
+                });
+                dataBase.push(Input.value);
+                dataBase.sort();
+                list.insertAdjacentHTML("afterbegin",'<li class="promo__interactive-item"></li>');
+                list.querySelectorAll('.promo__interactive-item').forEach((a,b)=>{
+                    a.innerHTML = "";
+                    a.insertAdjacentHTML("afterbegin", '<div class="delete"></div>');
+                    a.insertAdjacentText("afterbegin", `${b+1}.${dataBase[b]}`);
+                    dataBase[b] = `${b+1}.${dataBase[b]}`;
+                });
+                deleteItem(movieDB.movies);
+                Input.value = "";
+                if (CheckBox.checked===true){
+                    CheckBox.checked = false;
+                }
+            }
+        });
+    }
+    
+    //удаление элементов из просмотренных фильмов
+    deleteItem(movieDB.movies);
+    function deleteItem(dataBase){
+        list.querySelectorAll('.promo__interactive-item').forEach((elem)=>{ 
+            elem.lastElementChild.addEventListener("click",()=>{
+                let i;
+                i = +elem.innerText.slice(0,1)-1;
+                elem.remove();
+                dataBase.splice(i,1);
+                dataBase.forEach((elem,index)=>{
+                    dataBase[index]=elem.substr(2);
+                });
+                dataBase.sort();
+                list.querySelectorAll('.promo__interactive-item').forEach((a,b)=>{
+                    a.innerHTML = "";
+                    a.insertAdjacentHTML("afterbegin", '<div class="delete"></div>');
+                    a.insertAdjacentText("afterbegin", `${b+1}.${dataBase[b]}`);
+                    dataBase[b] = `${b+1}.${dataBase[b]}`;
+                });
+                deleteItem(movieDB.movies);
+            });
+        });
+    }
+    
+    // проверяем на любимый фильм
+    checkIfLove();
+    function checkIfLove(){
+        CheckBox.addEventListener("click",()=>{
+            if (CheckBox.checked===true){
+                console.log("Добавляем любимый фильм");
+            }
+        });
+    }
 });
-genre.textContent = "драма";
-background.style.cssText = "background-image: url('../img/bg.jpg');";
-movieDB.movies.sort();  
 
-for (let i=0;i<movieDB.movies.length;i++){
-    list[i].textContent = `${i+1}.${movieDB.movies[i]}`;
-}
 
 
